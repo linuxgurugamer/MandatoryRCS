@@ -23,6 +23,9 @@ namespace MandatoryRCS
         public List<ModuleRCS> RCSModules = new List<ModuleRCS>();
         public List<ModuleReactionWheel> RWModules = new List<ModuleReactionWheel>();
 
+        public Vector3 posRWTorque;
+        public Vector3 negRWTorque;
+
         private void FixedUpdate()
         {
             if (FlightGlobals.ready && Vessel.loaded)
@@ -30,12 +33,21 @@ namespace MandatoryRCS
                 if (updateModules)
                 {
                     UpdateTorqueModules(Vessel);
+                    getVesselRWTorque();
                     updateModules = false;
+                }         
+
+                // Check if the vessel RCS toggle is enabled
+                if (RCSModules.Count > 0 && RCSModules.First().rcs_active)
+                {
+                    getVesselRCSTorque();
+
+
+
                 }
 
-                getVesselRCSTorque();
-                getVesselRWTorque();
             }
+
 
         }
 
@@ -60,7 +72,7 @@ namespace MandatoryRCS
 
             foreach (ModuleRCS rcs in RCSModules)
             {
-                rcs.GetPotentialTorque(out posv, out negv);
+                rcs.GetPotentialTorque(out posv, out negv); // The values are wrong...
                 posRCSTorque += posv;
                 negRCSTorque += negv;
             }
@@ -69,11 +81,23 @@ namespace MandatoryRCS
         public void getVesselRWTorque()
         {
             RWTorque = Vector3.zero;
+
+            posRWTorque = Vector3.zero;
+            negRWTorque = Vector3.zero;
+            Vector3 posv;
+            Vector3 negv;
+
+
+
             foreach (ModuleReactionWheel rw in RWModules)
             {
-                RWTorque.x += rw.PitchTorque;
-                RWTorque.y += rw.RollTorque;
-                RWTorque.z += rw.YawTorque;
+                rw.GetPotentialTorque(out posv, out negv);
+                posRWTorque += posv;
+                negRWTorque += negv;
+
+                //RWTorque.x += rw.PitchTorque;
+                //RWTorque.y += rw.RollTorque;
+                //RWTorque.z += rw.YawTorque;
             }
         }
     }

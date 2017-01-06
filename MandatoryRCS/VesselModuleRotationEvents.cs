@@ -31,7 +31,7 @@ namespace MandatoryRCS
 
         private void onVesselStandardModification(Vessel v)
         {
-            v.vesselModules.OfType<VesselModuleTorque>().First().UpdateTorqueModules(v);
+            v.vesselModules.OfType<VesselModuleTorque>().First().updateModules = true;
         }
 
         // Detect active vessel change when switching vessel in the physics bubble
